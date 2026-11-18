@@ -1,0 +1,18 @@
+# Original course transfer (large archives; the relevant sources are in reference/)
+wetransfer_*/
+wetransfer_*.zip
+*.zip
+
+# Originals copied into docs/
+Latest manual.pdf
+20261113_112436.jpg
+
+# Raw PPK2 captures are kept compressed (*.csv.gz); logs and test captures are not tracked
+data/ppk_*.csv
+data/*.log
+
+# Python / OS / build
+__pycache__/
+*.pyc
+.DS_Store
+build/
