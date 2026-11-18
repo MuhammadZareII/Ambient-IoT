@@ -42,9 +42,28 @@ arduino-cli upload  -b arduino:renesas_uno:nanor4 -p COMx nano_r4_sensor_node
 ## Results so far
 Measured with a PPK2 supplying the whole system with 5 V on the Nano's +5V pin (about 4.5 V measured).
 
-| Configuration | Average current | Notes |
-|---|---|---|
-| Baseline: 5 s interval, BLE connected, MCU always on | **73.8 mA** | [data/baseline_report.html](data/baseline_report.html) |
-| Nano in Software Standby, 30 s interval | **58.9 mA** | The MCU's share (about 17 mA) is gone. The remaining ~58 mA comes from the Nano board itself and is still under investigation. |
+| Configuration | Average current | Peak | Average power | Full report |
+|---|---|---|---|---|
+| Baseline: 5 s interval, BLE connected, MCU always on | **73.8 mA** | 200 mA (power-up) | ~330 mW | [baseline_report.html](data/baseline_report.html) |
+| Step 1: Nano in Software Standby, 30 s interval | **58.9 mA** | 197 mA (power-up) | ~265 mW | [lowpower_report.html](data/lowpower_report.html) |
+
+To view a full report, download the HTML file and open it in a browser; GitHub doesn't render HTML files. The raw PPK2 captures are in `data/*.csv.gz` (10 kHz, `Timestamp(ms),Current(uA)`).
+
+### Baseline power profile
+![Baseline supply current](docs/results/baseline_power.png)
+
+- **0–8 s:** the XIAO advertises, with spikes up to about 93 mA, until a central connects.
+- **After 8 s:** a steady base of about 73 mA plus roughly 10 mA of ripple from the BLE connection's regular check-ins.
+- **Small dips every 5 s:** the Nano's measure-and-send cycles.
+
+### Step 1: MCU Software Standby
+![Low-power supply current](docs/results/lowpower_power.png)
+
+About 3.5 s after power-up the RA4M1 first enters Software Standby, and the current drops by about 17 mA (75 → 58 mA). That is the MCU's whole share. Pulling the XIAO's and the SHT's power wires changed the current by less than about 1 mA, so the remaining ~58 mA comes from the Nano board itself. That is the next thing to find.
+
+### Sensor readings (baseline run, received over BLE)
+![Temperature, humidity and soil moisture](docs/results/baseline_sensors.png)
+
+The soil probe was in air during these runs, so its raw values are close to zero and don't mean much yet.
 
 Planned next: find the source of the Nano board's ~58 mA standby current, switch the XIAO to burst-beacon mode (`BURST_BEACON_MODE 1`), remove the LEDs, then move to energy harvesting (supercapacitor, BQ25570 PMU, solar).
